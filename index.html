@@ -5,82 +5,83 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>Turntable</title>
 <style>
-:root{--bg:#17130f;--fg:#f3ece0;--mut:#a39a8a;--card:#241e17;--line:#3a3025;--acc:#1db954;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+:root{--c:#8a7a66;box-sizing:border-box}
 *{box-sizing:border-box}
-html,body{margin:0;min-height:100%;background:var(--bg);color:var(--fg);font-family:"Helvetica Neue",Helvetica,Arial,sans-serif}
-#bgc{position:fixed;inset:0;background-size:cover;background-position:center;filter:blur(70px) saturate(1.4);opacity:.35;transform:scale(1.3);transition:background-image .6s}
-main{position:relative;max-width:520px;margin:0 auto;padding:22px 18px 40px;display:flex;flex-direction:column;gap:18px;align-items:center}
-h2{margin:0;font-size:1.1rem}
-.card{width:100%;background:var(--card);border:1px solid var(--line);border-radius:14px;padding:16px}
-.card p{margin:0 0 10px;color:var(--mut);font-size:.88rem;line-height:1.5}
-code{background:#0006;padding:2px 6px;border-radius:5px;font-size:.8rem;word-break:break-all}
-input[type=text]{width:100%;font:inherit;padding:10px 12px;border-radius:10px;border:1px solid var(--line);background:#0005;color:var(--fg);margin:6px 0 10px}
-button{font:inherit;color:var(--fg);cursor:pointer}
-.btn{background:var(--acc);color:#04210f;border:0;border-radius:999px;padding:10px 18px;font-weight:700}
-.ghost{background:#0004;border:1px solid var(--line);border-radius:999px;padding:9px 16px;font-size:.85rem}
-.hide{display:none!important}
-/* deck */
-.deck{position:relative;width:100%;max-width:440px;aspect-ratio:1.12;background:linear-gradient(145deg,#3b2c1d,#241a11);border-radius:18px;border:1px solid #5a4630;box-shadow:0 24px 50px #0008}
-.deck.over{outline:3px dashed var(--acc)}
-.platter{position:absolute;left:5%;top:7%;width:74%;aspect-ratio:1;border-radius:50%;background:radial-gradient(circle,#555,#222);box-shadow:inset 0 0 0 6px #111,0 6px 18px #0009;display:grid;place-items:center;cursor:pointer}
-.rec{width:94%;aspect-ratio:1;border-radius:50%;display:grid;place-items:center;background:radial-gradient(circle,#222 0 17%,transparent 17.5%),repeating-radial-gradient(circle,#0b0b0b 0 2px,#171717 2px 4px);opacity:0;transform:translateY(-40px) scale(1.1);transition:opacity .4s,transform .5s cubic-bezier(.2,.8,.2,1);position:relative}
-.rec.in{opacity:1;transform:none}
-.rec i{width:36%;aspect-ratio:1;border-radius:50%;background-size:cover;background-position:center}
-.rec::after{content:"";position:absolute;width:3.5%;aspect-ratio:1;border-radius:50%;background:#ddd}
-.rec.spin{animation:spin 3.2s linear infinite}
+html,body{margin:0;height:100%;overflow:hidden;background:var(--c);transition:background .8s;font-family:"Courier New",ui-monospace,monospace;color:#fff}
+#app{display:grid;grid-template-columns:1fr clamp(176px,30vw,340px);height:100dvh;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+.stage{position:relative;overflow:hidden}
+.brand{position:absolute;left:20px;top:18px;font:800 15px "Helvetica Neue",Arial,sans-serif;letter-spacing:.5px;z-index:5}
+.srch{position:absolute;left:20px;top:48px;z-index:5;display:flex;gap:6px}
+.srch input{font:inherit;font-size:12px;width:150px;padding:6px 9px;border-radius:4px;border:1px solid #fff6;background:#0003;color:#fff}
+.srch input::placeholder{color:#fffa}
+.srch button,.btn{font:inherit;font-size:12px;color:#fff;background:#0005;border:1px solid #fff5;border-radius:4px;padding:6px 10px;cursor:pointer}
+.vinyl{--d:min(112vh,130vw);position:absolute;width:var(--d);height:var(--d);left:calc(var(--d)*-.14);top:50%;transform:translateY(-50%);cursor:pointer}
+.disc{position:absolute;inset:0;border-radius:50%;background:repeating-radial-gradient(circle,#0d0d0d 0 2px,#1b1b1b 2px 4px);box-shadow:0 20px 60px #0007;animation:spin 3.4s linear infinite;animation-play-state:paused;transition:opacity .35s,transform .45s}
+.disc::before{content:"";position:absolute;inset:0;border-radius:50%;background:conic-gradient(from 20deg,transparent 0,#fff1 8%,transparent 16%,transparent 50%,#fff1 58%,transparent 66%)}
+.spin .disc{animation-play-state:running}
+.swap .disc{opacity:0;transform:scale(.96)}
 @keyframes spin{to{transform:rotate(360deg)}}
-.arm{position:absolute;top:7%;right:7%;width:7px;height:58%;transform-origin:50% 8px;transform:rotate(-18deg);transition:transform .8s cubic-bezier(.3,.7,.2,1);pointer-events:none}
-.arm::before{content:"";position:absolute;inset:0;border-radius:4px;background:linear-gradient(90deg,#ccc,#888)}
-.arm::after{content:"";position:absolute;bottom:-10px;left:-6px;width:19px;height:26px;border-radius:4px;background:#222;border:1px solid #666}
-.pivot{position:absolute;top:calc(7% - 14px);right:calc(7% - 14px);width:35px;height:35px;border-radius:50%;background:radial-gradient(circle,#999,#333);border:1px solid #666}
-.np{text-align:center;width:100%}
-.np h2{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.np p{margin:4px 0 0;color:var(--mut);font-size:.9rem}
-.bar{width:100%}
-input[type=range]{-webkit-appearance:none;appearance:none;width:100%;height:4px;border-radius:4px;background:var(--line);cursor:pointer}
-input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:14px;height:14px;border-radius:50%;background:var(--fg)}
-input[type=range]::-moz-range-thumb{width:14px;height:14px;border:0;border-radius:50%;background:var(--fg)}
-.t{display:flex;justify-content:space-between;color:var(--mut);font-size:.75rem;margin-top:6px}
-.row{display:flex;gap:10px;width:100%;align-items:center}
-.row .play{width:56px;height:56px;border-radius:50%;background:var(--fg);color:var(--bg);border:0;font-size:1.2rem;flex:none}
-.row input[type=range]{flex:1}
-#msg{color:var(--mut);font-size:.82rem;text-align:center;min-height:1.2em;margin:0}
-.crate{display:flex;gap:12px;overflow-x:auto;width:100%;padding:4px 2px 10px;scrollbar-width:thin}
-.sl{flex:none;width:104px;touch-action:pan-x;user-select:none;-webkit-user-select:none;cursor:grab}
-.sl b{display:block;width:104px;height:104px;border-radius:6px;background-size:cover;background-position:center;box-shadow:0 8px 18px #0008;pointer-events:none}
-.sl span{display:block;font-size:.76rem;margin-top:6px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;pointer-events:none}
-.sl em{display:block;font-style:normal;font-size:.7rem;color:var(--mut);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;pointer-events:none}
-.ghostrec{position:fixed;z-index:9;width:90px;height:90px;border-radius:50%;background-size:cover;pointer-events:none;box-shadow:0 12px 30px #000a;transform:translate(-50%,-50%)}
-.s{display:flex;gap:8px;width:100%}
-.s input{margin:0;flex:1}
+.lab{position:absolute;left:50%;top:50%;width:31%;aspect-ratio:1;transform:translate(-50%,-50%);border-radius:50%;overflow:hidden}
+.lab svg{display:block;width:100%;height:100%}
+.arm{position:absolute;left:73%;top:9%;height:50%;width:0;transform-origin:50% 0;transform:rotate(-14deg);transition:transform 1s cubic-bezier(.3,.7,.2,1);z-index:3;pointer-events:none}
+.arm::before{content:"";position:absolute;left:-1px;top:0;width:3px;height:100%;background:#fff;border-radius:2px;box-shadow:0 2px 6px #0004}
+.arm i{position:absolute;left:-10px;top:-10px;width:20px;height:20px;border-radius:50%;background:#fff}
+.arm b{position:absolute;left:-8px;bottom:-8px;width:16px;height:22px;border-radius:3px;background:#e9e4da;box-shadow:0 2px 6px #0005}
+.cov{position:absolute;right:22px;bottom:22px;width:clamp(86px,15vw,150px);aspect-ratio:1;background-size:cover;background-position:center;box-shadow:0 14px 30px #0006;border-radius:3px;opacity:0;z-index:4}
+.cov.on{opacity:1;animation:drop .7s cubic-bezier(.2,.8,.2,1)}
+@keyframes drop{from{transform:translateX(160%) rotate(10deg);opacity:0}to{transform:none;opacity:1}}
+.wid{position:absolute;left:20px;bottom:20px;z-index:5;display:flex;align-items:center;gap:10px;background:#000a;border:1px solid #fff2;border-radius:10px;padding:8px 12px;backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);max-width:calc(100% - 140px)}
+.wid button{width:30px;height:30px;border-radius:50%;border:0;background:#fff;color:#111;cursor:pointer;font-size:12px;flex:none}
+.wid input[type=range]{width:clamp(70px,14vw,170px)}
+.wid small{font-size:10px;opacity:.8;min-width:62px}
+input[type=range]{-webkit-appearance:none;appearance:none;height:3px;border-radius:3px;background:#fff4;cursor:pointer}
+input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:11px;height:11px;border-radius:50%;background:#fff}
+input[type=range]::-moz-range-thumb{width:11px;height:11px;border:0;border-radius:50%;background:#fff}
+.side{background:#e8e0d2;color:#222;display:flex;flex-direction:column;min-height:0;border-left:1px solid #0001}
+.top{font-size:10px;letter-spacing:1px;text-align:right;padding:18px 16px 10px}
+.top:before{content:"● ";color:#e0382e}
+#msg{font-size:10px;color:#7a6f5d;padding:0 16px 8px;min-height:14px;line-height:1.3}
+.list{flex:1;overflow-y:auto;padding:4px 14px 30px 18px;scrollbar-width:none}
+.list::-webkit-scrollbar{display:none}
+.sp{height:28px;margin-bottom:5px;border-radius:3px;display:flex;align-items:center;gap:8px;padding:0 10px;font-size:10px;font-weight:700;white-space:nowrap;overflow:hidden;cursor:pointer;transition:transform .25s;box-shadow:0 1px 0 #0003}
+.sp.on{transform:translateX(-14px);box-shadow:0 3px 10px #0004}
+.sp s{text-decoration:none;opacity:.7;font-weight:400;overflow:hidden;text-overflow:ellipsis}
+.sp span{overflow:hidden;text-overflow:ellipsis;flex:none;max-width:62%}
+.setup{position:fixed;inset:0;z-index:20;background:#000b;display:grid;place-items:center;padding:20px}
+.setup div{max-width:420px;background:#1c1813;border:1px solid #fff2;border-radius:14px;padding:20px;font-family:"Helvetica Neue",Arial,sans-serif}
+.setup h2{margin:0 0 8px}.setup p{font-size:.85rem;color:#c9bfae;line-height:1.5;margin:0 0 10px}
+.setup code{background:#0007;padding:2px 6px;border-radius:5px;font-size:.78rem;word-break:break-all}
+.setup input{width:100%;font:inherit;padding:10px;border-radius:8px;border:1px solid #fff3;background:#0006;color:#fff;margin:4px 0 12px}
+.setup .go{background:#1db954;color:#04210f;border:0;border-radius:999px;padding:10px 18px;font-weight:700;cursor:pointer}
+.hide{display:none!important}
 </style>
 </head>
 <body>
-<div id="bgc"></div>
-<main>
-  <section class="card" id="setup">
+<div class="setup" id="setup">
+  <div>
     <h2>Connect Spotify</h2>
     <p>One-time setup: create an app at <code>developer.spotify.com/dashboard</code>, tick “Web Playback SDK”, and add this exact Redirect URI:</p>
     <p><code id="ruri"></code></p>
     <p>Then paste the app’s Client ID (no secret needed):</p>
-    <input type="text" id="cid" placeholder="Client ID" autocomplete="off">
-    <button class="btn" id="login">Connect</button>
+    <input id="cid" placeholder="Client ID" autocomplete="off">
+    <button class="go" id="login">Connect</button>
+  </div>
+</div>
+<div id="app">
+  <section class="stage" id="stage">
+    <div class="brand">TURNTABLE</div>
+    <div class="srch"><input id="q" placeholder="Search songs"><button id="go">Go</button></div>
+    <div class="vinyl" id="vinyl"><div class="disc"><div class="lab" id="lab"></div></div></div>
+    <div class="arm" id="arm"><i></i><b></b></div>
+    <div class="cov" id="cov"></div>
+    <div class="wid"><button id="pp" aria-label="Play or pause">▶</button><input type="range" id="seek" min="0" max="1000" value="0" aria-label="Seek"><small id="tm">0:00 / 0:00</small><input type="range" id="vol" min="0" max="100" value="80" style="width:50px" aria-label="Volume"></div>
   </section>
-
-  <section class="hide" id="player" style="width:100%;display:flex;flex-direction:column;gap:18px;align-items:center">
-    <div class="deck" id="deck">
-      <div class="platter" id="platter"><div class="rec" id="rec"><i id="lab"></i></div></div>
-      <div class="pivot"></div><div class="arm" id="arm"></div>
-    </div>
-    <div class="np"><h2 id="ti">Pick a record</h2><p id="ar">Drag a sleeve onto the turntable</p></div>
-    <div class="bar"><input type="range" id="seek" min="0" max="1000" value="0" aria-label="Seek"><div class="t"><span id="cu">0:00</span><span id="du">0:00</span></div></div>
-    <div class="row"><button class="play" id="pp" aria-label="Play or pause">▶</button><input type="range" id="vol" min="0" max="100" value="80" aria-label="Volume"></div>
-    <p id="msg"></p>
-    <div class="s"><input type="text" id="q" placeholder="Search songs or artists"><button class="btn" id="go">Search</button></div>
-    <div class="crate" id="crate"></div>
-    <button class="ghost" id="out">Disconnect</button>
-  </section>
-</main>
+  <aside class="side">
+    <div class="top" id="top">PICK A RECORD</div>
+    <div id="msg"></div>
+    <div class="list" id="list"></div>
+  </aside>
+</div>
 <script>
 (function(){
 var $=function(i){return document.getElementById(i)};
@@ -116,66 +117,83 @@ async function api(path,opt){
 }
 function fmt(ms){var s=Math.floor(ms/1000),m=Math.floor(s/60);s%=60;return m+':'+(s<10?'0':'')+s}
 function norm(t){return {uri:t.uri,name:t.name,artist:t.artists.map(function(a){return a.name}).join(', '),img:(t.album.images[0]||{}).url||'',url:(t.external_urls||{}).spotify,dur:t.duration_ms}}
-function crate(list){
-  var c=$('crate');c.innerHTML='';
-  if(!list.length){c.innerHTML='<p style="color:var(--mut);font-size:.85rem">Nothing here yet. Search for a song.</p>';return}
-  list.forEach(function(t){
-    var d=document.createElement('div');d.className='sl';
-    var b=document.createElement('b');b.style.backgroundImage='url("'+t.img+'")';
-    var n=document.createElement('span');n.textContent=t.name;var a=document.createElement('em');a.textContent=t.artist;
-    d.appendChild(b);d.appendChild(n);d.appendChild(a);c.appendChild(d);drag(d,t);
+/* colours */
+var cache={};
+function hash(s){var h=0;for(var i=0;i<s.length;i++)h=(h*31+s.charCodeAt(i))|0;var H=Math.abs(h)%360;return hsl(H,38,42)}
+function hsl(h,s,l){s/=100;l/=100;var k=function(n){return (n+h/30)%12},a=s*Math.min(l,1-l),f=function(n){return Math.round(255*(l-a*Math.max(-1,Math.min(k(n)-3,Math.min(9-k(n),1)))))};return [f(0),f(8),f(4)]}
+function rgb(c){return 'rgb('+c[0]+','+c[1]+','+c[2]+')'}
+function lum(c){return (0.299*c[0]+0.587*c[1]+0.114*c[2])/255}
+function color(t){
+  if(cache[t.img])return Promise.resolve(cache[t.img]);
+  return new Promise(function(res){
+    var done=function(c){cache[t.img]=c;res(c)};
+    if(!t.img)return done(hash(t.name));
+    var im=new Image();im.crossOrigin='anonymous';
+    im.onload=function(){try{
+      var cv=document.createElement('canvas');cv.width=cv.height=16;var x=cv.getContext('2d');x.drawImage(im,0,0,16,16);
+      var d=x.getImageData(0,0,16,16).data,r=0,g=0,b=0,w=0;
+      for(var i=0;i<d.length;i+=4){var mx=Math.max(d[i],d[i+1],d[i+2]),mn=Math.min(d[i],d[i+1],d[i+2]),wt=0.15+(mx-mn)/255;r+=d[i]*wt;g+=d[i+1]*wt;b+=d[i+2]*wt;w+=wt}
+      done([Math.round(r/w*.85),Math.round(g/w*.85),Math.round(b/w*.85)]);
+    }catch(e){done(hash(t.name+t.artist))}};
+    im.onerror=function(){done(hash(t.name+t.artist))};
+    im.src=t.img;
   });
 }
-function drag(el,t){
-  el.onpointerdown=function(e){
-    var sx=e.clientX,sy=e.clientY,g=null;
-    function over(x,y){var r=$('deck').getBoundingClientRect();return x>r.left&&x<r.right&&y>r.top&&y<r.bottom}
-    function mv(e){
-      if(!g&&Math.hypot(e.clientX-sx,e.clientY-sy)>8){g=document.createElement('div');g.className='ghostrec';g.style.backgroundImage='url("'+t.img+'")';document.body.appendChild(g)}
-      if(g){g.style.left=e.clientX+'px';g.style.top=e.clientY+'px';$('deck').classList.toggle('over',over(e.clientX,e.clientY))}
-    }
-    function up(e){
-      document.removeEventListener('pointermove',mv);document.removeEventListener('pointerup',up);document.removeEventListener('pointercancel',cx);
-      $('deck').classList.remove('over');
-      if(g){g.remove();if(over(e.clientX,e.clientY))place(t)}else place(t);
-    }
-    function cx(){document.removeEventListener('pointermove',mv);document.removeEventListener('pointerup',up);document.removeEventListener('pointercancel',cx);if(g)g.remove();$('deck').classList.remove('over')}
-    document.addEventListener('pointermove',mv);document.addEventListener('pointerup',up);document.addEventListener('pointercancel',cx);
-  };
+/* spines */
+var tracks=[];
+function spines(list){
+  tracks=list;var L=$('list');L.innerHTML='';
+  if(!list.length){var p=document.createElement('div');p.style.cssText='font-size:11px;color:#7a6f5d;padding:6px';p.textContent='Nothing yet. Search for a song.';L.appendChild(p);return}
+  list.forEach(function(t,i){
+    var d=document.createElement('div');d.className='sp';
+    var c=hash(t.name+t.artist);d.style.background=rgb(c);d.style.color=lum(c)>.55?'#111':'#fff';
+    var n=document.createElement('span');n.textContent=t.name;var a=document.createElement('s');a.textContent=t.artist;
+    d.appendChild(n);d.appendChild(a);d.onclick=function(){place(t)};L.appendChild(d);t.el=d;
+    color(t).then(function(c){d.style.background=rgb(c);d.style.color=lum(c)>.55?'#111':'#fff'});
+  });
 }
-function arm(p){$('arm').style.transform='rotate('+(p===null?-18:(20+p*14))+'deg)'}
+function esc(s){return s.replace(/&/g,'&amp;').replace(/</g,'&lt;')}
+function label(t,c){
+  var lt=c.map(function(v){return Math.min(255,Math.round(v+(255-v)*.12))}),fg=lum(lt)>.6?'#1a1a1a':'#fff';
+  var nm=t.name.length>24?t.name.slice(0,23)+'…':t.name,ar=t.artist.length>30?t.artist.slice(0,29)+'…':t.artist;
+  $('lab').innerHTML='<svg viewBox="0 0 200 200"><defs><path id="pb" d="M 34 100 A 66 66 0 0 0 166 100"/><path id="pt" d="M 46 100 A 54 54 0 0 1 154 100"/></defs><circle cx="100" cy="100" r="100" fill="'+rgb(lt)+'"/><text fill="'+fg+'" font-family="Helvetica,Arial,sans-serif" font-weight="800" font-size="15" letter-spacing="2"><textPath href="#pb" startOffset="50%" text-anchor="middle">'+esc(nm.toUpperCase())+'</textPath></text><text fill="'+fg+'" opacity=".75" font-family="Courier New,monospace" font-size="9"><textPath href="#pt" startOffset="50%" text-anchor="middle">'+esc(ar.toUpperCase())+'</textPath></text><circle cx="100" cy="100" r="5" fill="#e8e0d2"/></svg>';
+}
+function arm(p){$('arm').style.transform='rotate('+(p===null?-14:(4+p*28))+'deg)'}
 async function place(t){
   S.cur=t;say('');
-  arm(null);$('rec').classList.remove('in','spin');
+  tracks.forEach(function(x){if(x.el)x.el.classList.toggle('on',x===t)});
+  $('top').textContent='NOW SPINNING';
+  arm(null);var v=$('vinyl');v.classList.remove('spin');v.classList.add('swap');
+  var c=await color(t);
   setTimeout(function(){
-    $('lab').style.backgroundImage='url("'+t.img+'")';$('bgc').style.backgroundImage='url("'+t.img+'")';
-    $('ti').textContent=t.name;$('ar').textContent=t.artist;$('du').textContent=fmt(t.dur);
-    $('rec').classList.add('in');
+    document.body.style.setProperty('--c',rgb(c));label(t,c);
+    $('cov').classList.remove('on');void $('cov').offsetWidth;$('cov').style.backgroundImage='url("'+t.img+'")';$('cov').classList.add('on');
+    v.classList.remove('swap');
   },450);
-  setTimeout(function(){arm(0);$('rec').classList.add('spin')},1000);
+  setTimeout(function(){arm(0);v.classList.add('spin')},1100);
   try{
     for(var i=0;i<40&&!S.dev;i++)await new Promise(function(r){setTimeout(r,250)});
     if(!S.dev)throw new Error('Player isn’t ready. Spotify Premium is required for in-page playback.');
     await api('/me/player/play?device_id='+S.dev,{method:'PUT',body:JSON.stringify({uris:[t.uri]})});
     S.playing=true;S.pos=0;S.dur=t.dur;S.ts=Date.now();
-  }catch(e){say(e.message+(t.url?' You can still open it in Spotify.':''));arm(null);$('rec').classList.remove('spin')}
+  }catch(e){say(e.message);arm(null);v.classList.remove('spin')}
 }
 function toggle(){if(S.pl&&S.cur)S.pl.togglePlay();else $('q').focus()}
 function sync(st){
   if(!st)return;
   S.playing=!st.paused;S.pos=st.position;S.dur=st.duration;S.ts=Date.now();
-  $('rec').classList.toggle('spin',S.playing);$('pp').textContent=S.playing?'❚❚':'▶';
+  $('vinyl').classList.toggle('spin',S.playing);$('pp').textContent=S.playing?'❚❚':'▶';
   if(!S.playing)arm(null);
 }
 setInterval(function(){
   if(!S.cur)return;
   var p=S.playing?Math.min(S.pos+(Date.now()-S.ts),S.dur):S.pos;
-  $('cu').textContent=fmt(p);$('du').textContent=fmt(S.dur);
+  $('tm').textContent=fmt(p)+' / '+fmt(S.dur);
   if(S.dur){$('seek').value=p/S.dur*1000;if(S.playing)arm(p/S.dur)}
 },300);
 $('seek').oninput=function(e){if(S.pl&&S.dur)S.pl.seek(e.target.value/1000*S.dur)};
 $('vol').oninput=function(e){if(S.pl)S.pl.setVolume(e.target.value/100)};
-$('pp').onclick=toggle;$('platter').onclick=toggle;
+$('pp').onclick=toggle;$('vinyl').onclick=toggle;
 function sdk(){
   window.onSpotifyWebPlaybackSDKReady=function(){
     var p=new Spotify.Player({name:'Turntable',getOAuthToken:function(cb){token().then(cb)},volume:.8});
@@ -190,15 +208,13 @@ function sdk(){
 }
 async function search(){
   var q=$('q').value.trim();if(!q)return;say('Searching…');
-  try{var j=await api('/search?'+new URLSearchParams({q:q,type:'track',limit:10}));crate(j.tracks.items.map(norm));say('')}catch(e){say(e.message)}
+  try{var j=await api('/search?'+new URLSearchParams({q:q,type:'track',limit:10}));spines(j.tracks.items.map(norm));say('')}catch(e){say(e.message)}
 }
 $('go').onclick=search;$('q').onkeydown=function(e){if(e.key==='Enter')search()};
 $('login').onclick=login;
-$('out').onclick=function(){['ref','ver'].forEach(function(k){ls(k,null)});if(S.pl)S.pl.disconnect();location.href=RU};
 async function start(){
-  $('setup').classList.add('hide');$('player').classList.remove('hide');arm(null);crate([]);
-  sdk();
-  try{var j=await api('/me/player/recently-played?limit=20');var seen={},l=[];j.items.forEach(function(i){if(!seen[i.track.id]){seen[i.track.id]=1;l.push(norm(i.track))}});if(l.length)crate(l)}catch(e){say(e.message)}
+  $('setup').classList.add('hide');arm(null);spines([]);sdk();
+  try{var j=await api('/me/player/recently-played?limit=20');var seen={},l=[];j.items.forEach(function(i){if(!seen[i.track.id]){seen[i.track.id]=1;l.push(norm(i.track))}});if(l.length)spines(l)}catch(e){say(e.message)}
 }
 (async function init(){
   var code=new URLSearchParams(location.search).get('code');
