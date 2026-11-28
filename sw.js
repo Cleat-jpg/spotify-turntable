@@ -1,4 +1,4 @@
-const C = 'turntable-v2';
+const C = 'turntable-v3';
 const A = ['./', './index.html', './manifest.webmanifest', './icon-192.png', './icon-512.png'];
 self.addEventListener('install', e => {
   e.waitUntil(caches.open(C).then(c => Promise.all(A.map(a => c.add(a).catch(() => {})))).then(() => self.skipWaiting()));
